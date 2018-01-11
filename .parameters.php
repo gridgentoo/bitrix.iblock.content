@@ -1,132 +1,96 @@
-<?
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
+<?php
+check_prolog();
 
-use Bitrix\Main\Loader;
-use Bitrix\Main\Localization\Loc;
+$params = new \Falur\Bitrix\Support\Component\Parameters;
+$factory = new \Falur\Bitrix\Support\Component\Parameters\Factory;
 
-if (Loader::includeModule('iblock')) {
-    return;
-}
-
-// Типы инфоблоков
-$arTypesEx = CIBlockParameters::GetIBlockTypes(['-' => ' ']);
-
-// Инфоблоки
-$arIBlocks = [];
-$dbIblock = CIBlock::GetList(
-    ['SORT' => 'ASC'],
-    [
-        'SITE_ID' => $_REQUEST['site'],
-        'TYPE' => $arCurrentValues['IBLOCK_TYPE'] != '-'
-                    ? $arCurrentValues['IBLOCK_TYPE'] 
-                    : ''
-    ]
-);
-while ($arRes = $dbIblock->Fetch()) {
-    $arIBlocks[$arRes['ID']] = $arRes['NAME'];
-}
-
-// Сортировка типы
-$arSorts      = ['ASC' => Loc::getMessage('T_IBLOCK_DESC_ASC'), 'DESC' => Loc::getMessage('T_IBLOCK_DESC_DESC')];
-$arSortFields = [
-    'ID'             => Loc::getMessage('T_IBLOCK_DESC_FID'),
-    'NAME'           => Loc::getMessage('T_IBLOCK_DESC_FNAME'),
-    'ACTIVE_FROM'    => Loc::getMessage('T_IBLOCK_DESC_FACT'),
-    'SORT'           => Loc::getMessage('T_IBLOCK_DESC_FSORT'),
-    'TIMESTAMP_X'    => Loc::getMessage('T_IBLOCK_DESC_FTSAMP')
+$sort = [
+    'ID'          => trans('T_IBLOCK_DESC_FID'),
+    'NAME'        => trans('T_IBLOCK_DESC_FNAME'),
+    'ACTIVE_FROM' => trans('T_IBLOCK_DESC_FACT'),
+    'SORT'        => trans('T_IBLOCK_DESC_FSORT'),
+    'TIMESTAMP_X' => trans('T_IBLOCK_DESC_FTSAMP'),
 ];
 
-// Свойства
-$arProperty_LNS = [];
-$dbProp = CIBlockProperty::GetList(
-    ['sort' => 'asc', 'name' => 'asc'],
-    [
-        'ACTIVE' => 'Y',
-        'IBLOCK_ID' => isset($arCurrentValues['IBLOCK_ID'])
-                        ? $arCurrentValues['IBLOCK_ID']
-                        : $arCurrentValues['ID']
-    ]
+$order = [
+    'ASC'  => trans('T_IBLOCK_DESC_ASC'),
+    'DESC' => trans('T_IBLOCK_DESC_DESC'),
+];
+
+$params->addParameter(
+    $factory->iblockType('IBLOCK_TYPE')
+        ->setName('Тип инфоблока')
+        ->setRefresh(true)
 );
 
-while ($arRes = $rsProp->Fetch()) {
-    $arProperty[$arr['CODE']] = '['.$arr['CODE'].'] ' . $arr['NAME'];
-
-    if (in_array($arr['PROPERTY_TYPE'], ['L', 'N', 'S'])) {
-        $arProperty_LNS[$arr['CODE']] = '['.$arr['CODE'].'] '.$arr['NAME'];
-    }
-}
-
-$arComponentParameters = array(
-    'GROUPS' => array(),
-    'PARAMETERS' => array(
-        'IBLOCK_TYPE' => array(
-            'PARENT' => 'BASE',
-            'NAME' => Loc::getMessage('T_IBLOCK_DESC_LIST_TYPE'),
-            'TYPE' => 'LIST',
-            'VALUES' => $arTypesEx,
-            'DEFAULT' => 'news',
-            'REFRESH' => 'Y',
-        ),
-        'IBLOCK_ID' => array(
-            'PARENT' => 'BASE',
-            'NAME' => Loc::getMessage('T_IBLOCK_DESC_LIST_ID'),
-            'TYPE' => 'LIST',
-            'VALUES' => $arIBlocks,
-            'DEFAULT' => '={$_REQUEST["ID"]}',
-            'ADDITIONAL_VALUES' => 'Y',
-            'REFRESH' => 'Y',
-        ),
-        'SORT_BY1' => array(
-            'PARENT' => 'DATA_SOURCE',
-            'NAME' => Loc::getMessage('T_IBLOCK_DESC_IBORD1'),
-            'TYPE' => 'LIST',
-            'DEFAULT' => 'ACTIVE_FROM',
-            'VALUES' => $arSortFields,
-            'ADDITIONAL_VALUES' => 'Y',
-        ),
-        'SORT_ORDER1' => array(
-            'PARENT' => 'DATA_SOURCE',
-            'NAME' => Loc::getMessage('T_IBLOCK_DESC_IBBY1'),
-            'TYPE' => 'LIST',
-            'DEFAULT' => 'DESC',
-            'VALUES' => $arSorts,
-            'ADDITIONAL_VALUES' => 'Y',
-        ),
-        'SORT_BY2' => array(
-            'PARENT' => 'DATA_SOURCE',
-            'NAME' => Loc::getMessage('T_IBLOCK_DESC_IBORD2'),
-            'TYPE' => 'LIST',
-            'DEFAULT' => 'SORT',
-            'VALUES' => $arSortFields,
-            'ADDITIONAL_VALUES' => 'Y',
-        ),
-        'SORT_ORDER2' => array(
-            'PARENT' => 'DATA_SOURCE',
-            'NAME' => Loc::getMessage('T_IBLOCK_DESC_IBBY2'),
-            'TYPE' => 'LIST',
-            'DEFAULT' => 'ASC',
-            'VALUES' => $arSorts,
-            'ADDITIONAL_VALUES' => 'Y',
-        ),
-        'FILTER' => array(
-            'PARENT' => 'DATA_SOURCE',
-            'NAME' => Loc::getMessage('T_IBLOCK_FILTER'),
-            'TYPE' => 'LIST',
-            'VALUES' => [],
-            'ADDITIONAL_VALUES' => 'Y'
-        ),
-        'PAGE_ELEMENT_COUNT' => array(
-            'PARENT' => 'VISUAL',
-            'NAME' => Loc::getMessage('IBLOCK_PAGE_ELEMENT_COUNT'),
-            'TYPE' => 'STRING',
-            'DEFAULT' => '10',
-        ),
-        'RAND_ELEMENTS' => array(
-            'PARENT' => 'ADDITIONAL_SETTINGS',
-            'NAME' => Loc::getMessage('ITD_RAND_ELEMENTS'),
-            'TYPE' => 'CHECKBOX',
-            'DEFAULT' => 'N',
-        ),
-    ),
+$params->addParameter(
+    $factory->iblockId('IBLOCK_ID')
+        ->setName('Инфоблок')
+        ->setRefresh(true)
+        ->setDefault('')
+        ->setFilter([
+            'SITE_ID' => SITE_ID,
+            'TYPE'    => $arCurrentValues['IBLOCK_TYPE'] ?? '',
+        ])
 );
-?>
+
+$params->addParameter(
+    $factory->select('SORT_BY_1')
+        ->setName('Сортировка 1')
+        ->setDefault('NAME')
+        ->setValues($sort)
+);
+
+$params->addParameter(
+    $factory->select('SORT_ORDER_1')
+        ->setName('Направление сортировки 1')
+        ->setDefault('NAME')
+        ->setValues($order)
+);
+
+$params->addParameter(
+    $factory->select('SORT_BY_2')
+        ->setName('Сортировка 2')
+        ->setDefault('NAME')
+        ->setValues($sort)
+);
+
+$params->addParameter(
+    $factory->select('SORT_ORDER_2')
+        ->setName('Направление сортировки 2')
+        ->setDefault('NAME')
+        ->setValues($order)
+);
+
+$params->addParameter(
+    $factory->select('FILTER')
+        ->setName('Дополнительный фильтр')
+        ->setValues([])
+
+);
+
+$params->addParameter(
+    $factory->stringParameter('PAGINATION_COUNT')
+        ->setName('Количество показываемых элементов')
+        ->setDefault('10')
+);
+
+$params->addParameter(
+    $factory->stringParameter('PAGINATION_TEMPLATE')
+        ->setName('Шаблон постраничной навигации')
+        ->setDefault('')
+);
+
+$params->addParameter(
+    $factory->stringParameter('PAGINATION_NAME')
+        ->setName('Заголовок постраничной навигации')
+        ->setDefault('Страницы')
+);
+
+$params->addParameter(
+    $factory->stringParameter('ADD_CACHE_STRING')
+        ->setName('Строка добавляемая в кеш')
+        ->setDefault('')
+);
+
+$arComponentParameters = $params->toArray();

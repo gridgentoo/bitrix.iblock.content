@@ -12,6 +12,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
  * @license   GNU General Public License http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-echo '<pre>';
-print_r($arResult);
-echo '</pre>';
+/** @var array $arResult */
+/** @var array $arParams */
+dump($arResult, $arParams);

@@ -1,0 +1,29 @@
+{
+  "name": "falur/bitrix-com-iblock-content",
+  "type": "bitrix-d7-component",
+  "description": "Bitrix iblock content component",
+  "keywords": [
+    "bitrix",
+    "iblock",
+    "component"
+  ],
+  "license": "GNU General Public License",
+  "require": {
+    "php": ">=7.1.0",
+    "falur/bitrix-support": "*",
+    "falur/bitrix-iblock": "*"
+  },
+  "authors": [
+    {
+      "name": "Ildar Enakaev",
+      "email": "ienakaev@ya.ru"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Falur\\Bitrix\\Components\\IblockContent": "./"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

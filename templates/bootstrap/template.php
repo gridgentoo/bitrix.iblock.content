@@ -1,32 +1,37 @@
 <?php
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
+check_prolog();
+
+/** @var array $arResult */
+/** @var array $arParams */
+$presenter = new \Falur\Bitrix\Support\Presenter($arResult, $arParams, __DIR__);
 ?>
 
-<? foreach ($arResult['ITEMS'] as $arItem): ?>
-<?php $isPic = $arItem['PREVIEW_PICTURE_CACHE']['src'] || $arItem['PREVIEW_PICTURE']['SRC']; ?>
+<? foreach ($presenter->each('ITEMS') as $item): ?>
 <div class="row">
-	<? if ($isPic): ?>
-	<div class="col-sm-4">
-		<a href="<?= $arItem['DETAIL_PAGE_URL'] ?>" class="">
-			<img src="<?= $arItem['PREVIEW_PICTURE_CACHE']['src'] ?: $arItem['PREVIEW_PICTURE']['SRC'] ?>"
-				 class="img-responsive">
-		</a>
-	</div>
-	<? endif; ?>
+	<? if ($item->has('PREVIEW_PICTURE')): ?>
+    <div class="col-sm-4">
+        <a href="<?= $item->field('DETAIL_PAGE_URL'); ?>">
+            <img src="<?= $item->image('PREVIEW_PICTURE'); ?>" class="img-responsive">
+        </a>
+    </div>
+    <?php endif; ?>
 
-	<div class="<?= $isPic ? 'col-sm-8' : 'col-sm-12' ?>">
-		<div class="h3 title" style="margin-top: 0"><?= $arItem['NAME'] ?></div>
+	<div class="<?= $item->has('PREVIEW_PICTURE') ? 'col-sm-8' : 'col-sm-12'; ?>">
+		<div class="h3 title" style="margin-top: 0">
+            <?= $item->field('NAME'); ?>
+        </div>
 
-		<? if ($arItem['DATE_ACTIVE_FROM']): ?>
+		<? if ($item->has('DATE_ACTIVE_FROM')): ?>
 		<p class="text-muted">
-			<span class="glyphicon glyphicon-time"></span> <?= $arItem['DATE_ACTIVE_FROM'] ?>
+			<span class="glyphicon glyphicon-time"></span>
+            <?= $item->date('DATE_ACTIVE_FROM'); ?>
 		</p>
 		<? endif; ?>
 
-		<p><?= strip_tags($arItem['PREVIEW_TEXT']) ?></p>
+		<p><?= strip_tags($item->field('PREVIEW_TEXT')); ?></p>
 
 		<p class="text-muted">
-			<a href="<?= $arItem['DETAIL_PAGE_URL'] ?>">Подробнее</a>
+			<a href="<?= $item->field('DETAIL_PAGE_URL'); ?>">Подробнее</a>
 		</p>
 	</div>
 </div>
@@ -34,4 +39,4 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
 <hr>
 <? endforeach; ?>
 
-<?= $arResult['PAGINATION'] ?>
+<?= $presenter->field('PAGINATION'); ?>

@@ -1,21 +1,35 @@
 <?php
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
+check_prolog();
+
+/** @var array $arResult */
+/** @var array $arParams */
+$presenter = new \Falur\Bitrix\Support\Presenter($arResult, $arParams, __DIR__);
 ?>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-	<? foreach ($arResult['ITEMS'] as $id => $arItem): ?>
+	<? foreach ($presenter->each('ITEMS') as $k => $item): ?>
 	<div class="panel panel-default">
-		<div class="panel-heading" role="tab" id="h<?= $id ?>">
+		<div class="panel-heading" role="tab" id="h<?= $item->field('ID'); ?>">
 			<h4 class="panel-title">
-				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $id ?>" aria-expanded="true" aria-controls="collapse<?= $id ?>">
-					<?= $arItem['NAME'] ?>
+				<a role="button"
+                   data-toggle="collapse"
+                   data-parent="#accordion"
+                   href="#collapse<?= $item->field('ID'); ?>"
+                   aria-expanded="true"
+                   aria-controls="collapse<?= $item->field('ID'); ?>"
+                >
+                    <?= $item->field('NAME'); ?>
 				</a>
 			</h4>
 		</div>
 		
-		<div id="collapse<?= $id ?>" class="panel-collapse collapse <?= $id == 0 ? 'in' : 0 ?>" role="tabpanel" aria-labelledby="headingOne">
+		<div id="collapse<?= $item->field('ID'); ?>"
+             class="panel-collapse collapse <?= $k == 0 ? 'in' : '' ?>"
+             role="tabpanel"
+             aria-labelledby="headingOne"
+        >
 			<div class="panel-body">
-				<?= $arItem['PREVIEW_TEXT'] ?>
+				<?= $item->field('PREVIEW_TEXT') ?>
 			</div>
 		</div>
 	</div>

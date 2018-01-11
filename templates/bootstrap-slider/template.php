@@ -1,20 +1,24 @@
 <?php
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
+check_prolog();
+
+/** @var array $arResult */
+/** @var array $arParams */
+$presenter = new \Falur\Bitrix\Support\Presenter($arResult, $arParams, __DIR__);
 ?>
 
 <div id="slider" class="carousel slide" data-ride="carousel">
 	<ol class="carousel-indicators">
-		<? foreach ($arResult['ITEMS'] as $k => $arItem): ?>
+		<? foreach ($presenter->each('ITEMS') as $k => $item): ?>
 		<li data-target="#slider" data-slide-to="<?= $k ?>" class="<?= $k == 0 ? 'active' : '' ?>"></li>
 		<? endforeach; ?>
 	</ol>
 
 	<div class="carousel-inner" role="listbox">
-		<? foreach ($arResult['ITEMS'] as $k => $arItem): ?>
+		<? foreach ($presenter->each('ITEMS') as $k => $item): ?>
 		<div class="item <?= $k == 0 ? 'active' : '' ?>">
-			<img src="<?= $arItem['PREVIEW_PICTURE_CACHE']['src'] ?>" alt="">
+			<img src="<?= $item->image('PREVIEW_PICTURE', [1900, 800]) ?>" alt="">
 			<div class="carousel-caption">
-				<?= $arItem['PREVIEW_TEXT'] ?>
+                <?= $item->field('PREVIEW_TEXT') ?>
 			</div>
 		</div>
 		<? endforeach; ?>
