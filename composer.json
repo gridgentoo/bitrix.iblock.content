@@ -21,7 +21,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Falur\\Bitrix\\Components\\IblockContent": "./"
+      "Falur\\Bitrix\\Components\\IblockContent\\": "./"
     }
   },
   "minimum-stability": "dev",
