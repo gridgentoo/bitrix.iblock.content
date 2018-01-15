@@ -1,5 +1,5 @@
 {
-  "name": "falur/bitrix-com-iblock-content",
+  "name": "falur/iblock.content",
   "type": "bitrix-d7-component",
   "description": "Bitrix iblock content component",
   "keywords": [
